@@ -36,7 +36,7 @@ Dự án này triển khai một hệ thống AI để chẩn đoán giai đoạ
 TNM_MAC/
 ├── main_ws.py                 # Main script với Supervisor
 ├── main_woexpert_tnm.py       # Main script không có Supervisor
-├── llama31_8b_server.py       # Local LLM server (FastAPI)
+├── qwen_server.py             # Local Qwen-2.5 3B LLM server (FastAPI)
 ├── requirements.txt           # Dependencies
 ├── configs/
 │   └── config_list.json       # Model configuration
@@ -133,7 +133,7 @@ export HF_TOKEN="your_huggingface_token_here"
 ### 1. Khởi động Local LLM Server (nếu dùng local model)
 
 ```bash
-python llama31_8b_server.py
+python qwen_server.py
 ```
 
 Server sẽ chạy tại `http://127.0.0.1:4000`
@@ -317,7 +317,7 @@ python main_ws.py \
 **Nguyên nhân**: LLM server chưa chạy hoặc sai port
 
 **Giải pháp**:
-- Đảm bảo `llama31_8b_server.py` đang chạy
+- Đảm bảo `qwen_server.py` đang chạy
 - Kiểm tra `base_url` trong `configs/config_list.json` đúng với server
 
 ### Lỗi: Out of memory khi load model
