@@ -1,0 +1,5 @@
+pyautogen==0.5.3
+openai==1.65.5
+tqdm==4.67.1
+numpy
+pandas
