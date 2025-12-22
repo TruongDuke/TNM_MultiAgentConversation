@@ -1,5 +1,6 @@
 import os
 from typing import List, Optional
+os.environ["TRANSFORMERS_NO_TORCHVISION"] = "1"  # <- thêm dòng này
 
 from fastapi import FastAPI
 from pydantic import BaseModel
