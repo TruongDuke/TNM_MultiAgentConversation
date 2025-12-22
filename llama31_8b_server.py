@@ -54,13 +54,22 @@ async def chat_completions(req: ChatCompletionRequest):
         return_tensors="pt"
     ).to(model.device)
 
+    generation_kwargs = {
+        "max_new_tokens": req.max_tokens or 512,
+    }
+
+    # Nếu temperature <= 0 => chuyển sang greedy decoding (do_sample=False)
+    if req.temperature is None or req.temperature <= 0:
+        generation_kwargs["do_sample"] = False
+    else:
+        generation_kwargs["do_sample"] = True
+        generation_kwargs["temperature"] = req.temperature
+        generation_kwargs["top_p"] = req.top_p
+
     with torch.no_grad():
         output_ids = model.generate(
             input_ids,
-            max_new_tokens=req.max_tokens or 512,
-            do_sample=True,
-            temperature=req.temperature,
-            top_p=req.top_p,
+            **generation_kwargs,
         )
 
     generated = output_ids[0][input_ids.shape[-1]:]
