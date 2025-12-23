@@ -107,9 +107,10 @@ def process_single_case(
     conversation_name = f"{case_crl}_conversation.json"
     identify = f"{args.num_specialists}-{args.n_round}"
 
-    # output/MAC_WS/tnm/x_llama3/3-13/1/...
+    # output/qwen/MAC_WS/tnm/x_llama3/3-13/1/...
     output_dir = osp.join(
         output_dir,
+        "qwen",
         "MAC_WS",
         args.stage,
         args.model_name,
