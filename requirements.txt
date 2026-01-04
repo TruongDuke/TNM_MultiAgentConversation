@@ -3,3 +3,8 @@ openai==1.65.5
 tqdm==4.67.1
 numpy
 pandas
+peft>=0.6.0
+transformers>=4.35.0
+torch>=2.0.0
+fastapi
+uvicorn

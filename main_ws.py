@@ -48,7 +48,14 @@ def parse_args():
         type=str,
         default="x_llama3",
         choices=["x_llama3"],
-        help="the llm models used for doctors & supervisor",
+        help="the llm models used for doctors",
+    )
+    parser.add_argument(
+        "--supervisor_model_name",
+        type=str,
+        default="supervisor_finetuned",
+        choices=["x_llama3", "supervisor_finetuned"],
+        help="the llm models used for supervisor",
     )
     parser.add_argument(
         "--dataset_name",
@@ -90,7 +97,7 @@ def parse_args():
 
 @simple_retry(max_attempts=100, delay=1)
 def process_single_case(
-    args, dataset, idx, output_dir, model_config, query_model_config
+    args, dataset, idx, output_dir, model_config, query_model_config, supervisor_model_config
 ):
     case_cost = 0.0
     case_info = {}
@@ -194,7 +201,7 @@ def process_single_case(
 
     Supervisor = AssistantAgent(
         name="Supervisor",
-        llm_config=model_config,
+        llm_config=supervisor_model_config,
         system_message=supervisor_system_message,
     )
 
@@ -308,12 +315,20 @@ def main():
         "tags": [args.model_name],
     }
 
+    supervisor_filter_criteria = {
+        "tags": [args.supervisor_model_name],
+    }
+
     query_config_list = config_list_from_json(
         env_or_file=args.config, filter_dict=query_filter_criteria
     )
 
     config_list = config_list_from_json(
         env_or_file=args.config, filter_dict=filter_criteria
+    )
+
+    supervisor_config_list = config_list_from_json(
+        env_or_file=args.config, filter_dict=supervisor_filter_criteria
     )
 
     query_model_config = {
@@ -330,6 +345,13 @@ def main():
         "timeout": 300,
     }
 
+    supervisor_model_config = {
+        "cache_seed": None,
+        "temperature": 1,
+        "config_list": supervisor_config_list,
+        "timeout": 300,
+    }
+
     dataset = MedDataset(dataname=args.dataset_name)
     data_len = len(dataset)
 
@@ -339,7 +361,7 @@ def main():
     for idx in tqdm(range(min(10, data_len))):
         try:
             process_single_case(
-                args, dataset, idx, output_dir, model_config, query_model_config
+                args, dataset, idx, output_dir, model_config, query_model_config, supervisor_model_config
             )
         except Exception as e:
             print(f"Failed to process case {idx} after all attempts: {str(e)}")
