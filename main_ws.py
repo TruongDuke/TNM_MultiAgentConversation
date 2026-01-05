@@ -357,8 +357,8 @@ def main():
 
     output_dir = args.output_dir
 
-    # Chạy thử tối đa 10 case đầu để test, muốn full thì đổi min(10, data_len) -> data_len
-    for idx in tqdm(range(min(10, data_len))):
+    # Chạy toàn bộ dataset
+    for idx in tqdm(range(data_len)):
         try:
             process_single_case(
                 args, dataset, idx, output_dir, model_config, query_model_config, supervisor_model_config
