@@ -7,30 +7,51 @@ from functools import wraps
 
 def prase_json(text):
     flag = False
-    if "```json" in text:
-        json_match = re.search(r"```json(.*?)```", text, re.DOTALL)
-        if json_match:
-            json_str = json_match.group(1).strip()
+    
+    # Try to extract JSON from Python code (look for json.dumps or dict literals)
+    if "```python" in text:
+        # Try to find JSON in json.dumps(...)
+        json_dumps_match = re.search(r'json\.dumps\((\{.*?\})\)', text, re.DOTALL)
+        if json_dumps_match:
+            json_str = json_dumps_match.group(1)
             json_data = json.loads(json_str)
             flag = True
-    elif "```JSON" in text:
-        json_match = re.search(r"```JSON(.*?)```", text, re.DOTALL)
-        if json_match:
-            json_str = json_match.group(1).strip()
-            json_data = json.loads(json_str)
-            flag = True
-    elif "```" in text:
-        json_match = re.search(r"```(.*?)```", text, re.DOTALL)
-        if json_match:
-            json_str = json_match.group(1).strip()
-            json_data = json.loads(json_str)
-            flag = True
-    else:
-        json_match = re.search(r"{.*?}", text, re.DOTALL)
-        if json_match:
-            json_str = json_match.group(0).strip()
-            json_data = json.loads(json_str)
-            flag = True
+        else:
+            # Try to find dict literal and convert to JSON
+            dict_match = re.search(r'\{[^{}]*"top_k_specialists"[^{}]*\[.*?\]\s*\}', text, re.DOTALL)
+            if dict_match:
+                # Convert Python dict syntax to JSON (handle single quotes, etc.)
+                dict_str = dict_match.group(0)
+                dict_str = dict_str.replace("'", '"')  # Replace single quotes
+                json_data = json.loads(dict_str)
+                flag = True
+    
+    if not flag:
+        if "```json" in text:
+            json_match = re.search(r"```json(.*?)```", text, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(1).strip()
+                json_data = json.loads(json_str)
+                flag = True
+        elif "```JSON" in text:
+            json_match = re.search(r"```JSON(.*?)```", text, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(1).strip()
+                json_data = json.loads(json_str)
+                flag = True
+        elif "```" in text:
+            json_match = re.search(r"```(.*?)```", text, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(1).strip()
+                json_data = json.loads(json_str)
+                flag = True
+        else:
+            json_match = re.search(r"{.*?}", text, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(0).strip()
+                json_data = json.loads(json_str)
+                flag = True
+    
     if not flag:
         json_text = text.strip("```json\n").strip("\n```")
         json_data = json.loads(json_text)

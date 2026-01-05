@@ -180,8 +180,11 @@ def get_consultant_message(case_presentation: str, num_specialists: int) -> str:
         "    1. Carefully read the medical scenario presented in patient_medical_history.\n"
         "    2. Based on the medical scenario, calculate the relevance of each specialist in candidate_specialists\n"
         f"       with patient_medical_history, and select the top {num_specialists} most relevant specialists as top_k_specialists.\n\n"
+        "IMPORTANT: You must output ONLY valid JSON, no code, no explanations, no markdown formatting.\n"
         "The output must be valid JSON with a single key:\n"
-        "    - \"top_k_specialists\": a list of specialist names.\n"
+        "    - \"top_k_specialists\": a list of specialist names.\n\n"
+        "Example output format:\n"
+        '{"top_k_specialists": ["Pulmonologist", "Oncologist", "Cardiothoracic surgeon"]}\n'
     )
     return msg
 
