@@ -49,6 +49,12 @@ def parse_args():
         help="choice dataset (TNM cases)",
     )
     parser.add_argument(
+        "--max_cases",
+        type=int,
+        default=None,
+        help="limit số ca cần chạy (None = chạy toàn bộ dataset)",
+    )
+    parser.add_argument(
         "--stage",
         type=str,
         default="tnm",
@@ -254,8 +260,9 @@ def main():
 
     output_dir = args.output_dir
 
-    # Chạy thử tối đa 10 case đầu để test, muốn full thì đổi min(10, data_len) -> data_len
-    for idx in tqdm(range(min(10, data_len))):
+    max_cases = data_len if args.max_cases is None else min(args.max_cases, data_len)
+
+    for idx in tqdm(range(max_cases)):
         try:
             process_single_case(
                 args, dataset, idx, output_dir, model_config,
